@@ -25,6 +25,7 @@ const morgan = require("morgan");
 const authRoute = require("./app/routes/auth");
 const userRoute = require("./app/routes/users");
 const postRoute = require("./app/routes/posts");
+const uploadRoute = require("./app/routes/video");
 const cors = require("cors");
 
 const corsOptions = {
@@ -51,9 +52,11 @@ app.use(express.json());
 app.use(helmet());
 app.use(morgan("common"));
 
+//routes
 app.use("/api/auth", authRoute);
 app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
+app.use("/api/video", uploadRoute);
 
 //aws configuration
 const aws = require("aws-sdk");
@@ -69,35 +72,7 @@ aws.config.update({
 const BUCKET = process.env.BUCKET;
 const s3 = new aws.S3();
 
-// const upload = multer({
-//   storage: multerS3({
-//     bucket: BUCKET,
-//     s3: s3,
-//     acl: "public-read",
-//     key: (req, file, cb) => {
-//       cb(null, file.originalname);
-//     },
-//   }),
-// });
-
-//controllers
-const { uploadFileController } = require("./controllers");
-
-// Set up Multer middleware to handle file uploads
-// by default, multer will store files in memory
-const upload = multer();
-
-// Handle the file upload
-app.post("/upload", upload.single("file"), uploadFileController);
-
-//------------------------------------------------------------
-
-// app.post("/upload", upload.single("file"), (req, res) => {
-//   console.log(req.file);
-
-//   res.send("SuccessFully uploaded " + req.file.location + "location");
-// });
-
+//------------------------------------------
 app.get("/list", async (req, res) => {
   let r = await s3.listObjectsV2({ Bucket: BUCKET }).promise();
   let x = r.Contents.map((item) => item.Key);
@@ -115,6 +90,7 @@ app.delete("/delete/:filename", async (req, res) => {
   await s3.deleteObject({ Bucket: BUCKET, Key: filename }).promise();
   res.send("File deleted successfully");
 });
+
 // listening at port no. 8800
 app.listen(8800, () => {
   console.log("Backend server is running!");
