@@ -73,23 +73,51 @@ const BUCKET = process.env.BUCKET;
 const s3 = new aws.S3();
 
 //------------------------------------------
+
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { s3: s3Buck } = require("./config");
+
 app.get("/list", async (req, res) => {
-  let r = await s3.listObjectsV2({ Bucket: BUCKET }).promise();
-  let x = r.Contents.map((item) => item.Key);
-  res.send(x);
+  const r = await s3.listObjectsV2({ Bucket: BUCKET }).promise();
+  let x = r.Contents.map((item) => {
+    // const getObjectParams = {
+    //   Bucket: BUCKET,
+    //   Key: item.Key,
+    // };
+    // const command = new GetObjectCommand(getObjectParams);
+    // const url = await getSignedUrl(s3Buck, command, { expiresIn: 3600 });
+    return "url";
+  });
+  const posts = r.Contents;
+
+  for (const post of posts) {
+    const getObjectParams = {
+      Bucket: BUCKET,
+      Key: post.Key,
+    };
+    const command = new GetObjectCommand(getObjectParams);
+    const url = await getSignedUrl(s3Buck, command);
+    console.log(url);
+  }
+  res.send(r);
+
+  // const client = new S3Client(clientParams);
+  // const command = new GetObjectCommand(getObjectParams);
+  // const url = await getSignedUrl(client, command, { expiresIn: 3600 });
 });
 
-app.get("/download/:filename", async (req, res) => {
-  const filename = req.params.filename;
-  let x = await s3.getObject({ Bucket: BUCKET, Key: filename }).promise();
-  res.send(x.Body);
-});
+// app.get("/download/:filename", async (req, res) => {
+//   const filename = req.params.filename;
+//   let x = await s3.getObject({ Bucket: BUCKET, Key: filename }).promise();
+//   res.send(x.Body);
+// });
 
-app.delete("/delete/:filename", async (req, res) => {
-  const filename = req.params.filename;
-  await s3.deleteObject({ Bucket: BUCKET, Key: filename }).promise();
-  res.send("File deleted successfully");
-});
+// app.delete("/delete/:filename", async (req, res) => {
+//   const filename = req.params.filename;
+//   await s3.deleteObject({ Bucket: BUCKET, Key: filename }).promise();
+//   res.send("File deleted successfully");
+// });
 
 // listening at port no. 8800
 app.listen(8800, () => {

@@ -35,6 +35,6 @@ const s3 = new aws.S3();
 const upload = multer();
 
 // Handle the file upload
-router.post("/upload", upload.single("file"), uploadFileController);
+router.post("/upload", upload.single("imageFile"), uploadFileController);
 
 module.exports = router;
