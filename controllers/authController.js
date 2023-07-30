@@ -3,10 +3,9 @@ const bcrypt = require("bcrypt");
 
 const { Upload } = require("@aws-sdk/lib-storage");
 const { s3 } = require("../config");
-const { GetObjectCommand } = require("@aws-sdk/client-s3");
-const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 const crypto = require("crypto");
+const { getImageUrl } = require("../utils");
 
 //register
 const userSignUpController = async (req, res) => {
@@ -39,12 +38,7 @@ const userSignUpController = async (req, res) => {
     });
     uploadParallel.done().then(async (data) => {
       //get image URL
-      const getObjectParams = {
-        Bucket: process.env.BUCKET,
-        Key: randomImageName,
-      };
-      const command = new GetObjectCommand(getObjectParams);
-      const url = await getSignedUrl(s3, command);
+      const url = await getImageUrl(randomImageName);
 
       // if the user if successfully registered, update the user's profile picture link
       const existingUser = await User.findById(user._id);
@@ -52,7 +46,7 @@ const userSignUpController = async (req, res) => {
       await existingUser.save();
 
       // res.send(user);
-      res.status(200).json({ existingUser });
+      res.status(200).json({ email, url });
     });
 
     // res.status(200).json({ user });
@@ -81,7 +75,21 @@ const userSignUpController = async (req, res) => {
   // }
 };
 
-//login
-const userLogInController = async (rea, res) => {};
+//login user
+const userLogInController = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.login(email, password);
+
+    //create token
+    // const token = createToken(user._id);
+    const url = user.profilePicture;
+
+    res.status(200).json({ email, url });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 
 module.exports = { userSignUpController, userLogInController };
