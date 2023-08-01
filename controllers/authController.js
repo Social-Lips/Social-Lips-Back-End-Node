@@ -1,12 +1,3 @@
-const User = require("../app/models/User");
-const bcrypt = require("bcrypt");
-
-const { Upload } = require("@aws-sdk/lib-storage");
-const { s3 } = require("../config");
-
-const crypto = require("crypto");
-const { getImageUrl } = require("../utils");
-
 const {
   userSignUpService,
   userLogInService,

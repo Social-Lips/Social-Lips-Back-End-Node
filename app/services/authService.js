@@ -16,7 +16,7 @@ const userSignUpService = async (email, password, file, res) => {
   try {
     //sign in the user and add to the mongoDb
     const user = await User.signup(email, password);
-    console.log(user._id);
+    const userId = user._id;
 
     //upload profile picture to the s3
     const randomImageName = randomName();
@@ -43,7 +43,7 @@ const userSignUpService = async (email, password, file, res) => {
       await existingUser.save();
 
       // res.send(user);
-      res.status(200).json({ email, url });
+      res.status(200).json({ email, url, userId });
     });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -77,8 +77,9 @@ const userLogInService = async (email, password, res) => {
     //create token
     // const token = createToken(user._id);
     const url = user.profilePicture;
+    const userId = user._id;
 
-    res.status(200).json({ email, url });
+    res.status(200).json({ email, url, userId });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
