@@ -4,7 +4,6 @@ const { s3 } = require("../config");
 
 //get image URL handler
 const getImageUrl = async (randomImageName) => {
-  //get image URL
   const getObjectParams = {
     Bucket: process.env.BUCKET,
     Key: randomImageName,
