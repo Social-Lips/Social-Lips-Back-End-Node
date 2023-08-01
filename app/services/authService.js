@@ -70,4 +70,18 @@ const userSignUpService = async (email, password, file, res) => {
   // }
 };
 
-module.exports = { userSignUpService };
+const userLogInService = async (email, password, res) => {
+  try {
+    const user = await User.login(email, password);
+
+    //create token
+    // const token = createToken(user._id);
+    const url = user.profilePicture;
+
+    res.status(200).json({ email, url });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+module.exports = { userSignUpService, userLogInService };
