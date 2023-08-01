@@ -8,10 +8,12 @@ const getImageUrl = async (randomImageName) => {
     Bucket: process.env.BUCKET,
     Key: randomImageName,
   };
-  const command = new GetObjectCommand(getObjectParams);
-  const url = await getSignedUrl(s3, command, { expiresIn: undefined });
+  // const command = new GetObjectCommand(getObjectParams);
+  // const url = await getSignedUrl(s3, command, { expiresIn: 50000 });
 
-  return url;
+  const publicUrl = `https://${process.env.BUCKET}.s3.amazonaws.com/${randomImageName}`;
+
+  return publicUrl;
 };
 
 module.exports = { getImageUrl };

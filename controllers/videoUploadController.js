@@ -20,6 +20,7 @@ const uploadFileController = async (req, res) => {
     Bucket: "social-lips",
     Key: randomImage(),
     Body: file.buffer,
+    ACL: "public-read",
   };
 
   try {
