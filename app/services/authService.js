@@ -9,6 +9,7 @@ const { getImageUrl } = require("../../utils");
 
 //register
 const userSignUpService = async (email, password, file, res) => {
+  console.log(email, password);
   //create random name for profile picture
   const randomName = (byte = 32) => {
     return crypto.randomBytes(byte).toString("hex");
@@ -53,6 +54,8 @@ const userSignUpService = async (email, password, file, res) => {
 
 //login
 const userLogInService = async (email, password, res) => {
+  console.log(email, password);
+
   try {
     const user = await User.login(email, password);
 

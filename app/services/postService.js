@@ -45,4 +45,13 @@ const createPostService = async (user_id, description, file, res) => {
   }
 };
 
-module.exports = { createPostService };
+//get post service
+const getPostService = async (user_id, res) => {
+  const posts = await Post.find({ user_id }).sort({ createdAt: -1 });
+  if (!posts) {
+    res.status(400).json({ error: "No such posts" });
+  }
+  res.status(200).json(posts);
+};
+
+module.exports = { createPostService, getPostService };

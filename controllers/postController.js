@@ -1,4 +1,7 @@
-const { createPostService } = require("../app/services/postService");
+const {
+  createPostService,
+  getPostService,
+} = require("../app/services/postService");
 //create post
 const createPostController = async (req, res) => {
   const file = req.file;
@@ -7,4 +10,11 @@ const createPostController = async (req, res) => {
   await createPostService(user_id, description, file, res);
 };
 
-module.exports = { createPostController };
+const getPostController = async (req, res) => {
+  const { user_id } = req.query;
+  console.log(user_id);
+
+  await getPostService(user_id, res);
+};
+
+module.exports = { createPostController, getPostController };
