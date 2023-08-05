@@ -1,23 +1,21 @@
-const User = require("../models/User");
-const bcrypt = require("bcrypt");
+const {
+    userSignUpService,
+    userLogInService,
+} = require("../services/authService");
 
-exports.registerUser = async (req, res) => {
-    try {
-        //generate new password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(req.body.password, salt);
+//register
+const userSignUpController = async (req, res) => {
+    const file = req.file;
+    const { email, password } = req.body;
 
-        //create new user
-        const newUser = new User({
-            username: req.body.username,
-            email: req.body.email,
-            password: hashedPassword,
-        });
-
-        //save user and respond
-        const user = await newUser.save();
-        res.status(200).json(user);
-    } catch (err) {
-        res.status(500).json(err);
-    }
+    await userSignUpService(email, password, file, res);
 };
+
+//login user
+const userLogInController = async (req, res) => {
+    const { email, password } = req.body;
+
+    await userLogInService(email, password, res);
+};
+
+module.exports = { userSignUpController, userLogInController };
