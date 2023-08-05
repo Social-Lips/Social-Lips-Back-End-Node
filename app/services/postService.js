@@ -1,8 +1,93 @@
 const crypto = require("crypto");
-const Post = require("../../app/models/Post");
+// const Post = require("../../app/models/Post");
 const { getImageUrl } = require("../../utils");
 const { Upload } = require("@aws-sdk/lib-storage");
 const { s3 } = require("../../config");
+
+
+
+// services/postService.js
+
+const Post = require("../models/Post");
+const User = require("../models/User");
+
+const createPost = async (postData) => {
+  const newPost = new Post(postData);
+  try {
+    const savedPost = await newPost.save();
+    return savedPost;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const updatePost = async (postId, userId, postData) => {
+  try {
+    const post = await Post.findById(postId);
+    if (post.userId === userId) {
+      await post.updateOne({ $set: postData });
+      return "The post has been updated";
+    } else {
+      throw new Error("You can update only your post");
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
+const deletePost = async (postId, userId) => {
+  try {
+    const post = await Post.findById(postId);
+    if (post.userId === userId) {
+      await post.deleteOne();
+      return "The post has been deleted";
+    } else {
+      throw new Error("You can delete only your post");
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
+const likeDislikePost = async (postId, userId) => {
+  try {
+    const post = await Post.findById(postId);
+    if (!post.likes.includes(userId)) {
+      await post.updateOne({ $push: { likes: userId } });
+      return "The post has been liked";
+    } else {
+      await post.updateOne({ $pull: { likes: userId } });
+      return "The post has been disliked";
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
+const getPostById = async (postId) => {
+  try {
+    const post = await Post.findById(postId);
+    return post;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const getTimelinePosts = async (userId) => {
+  try {
+    const currentUser = await User.findById(userId);
+    const userPosts = await Post.find({ userId: currentUser._id });
+    const friendPosts = await Promise.all(
+        currentUser.followings.map((friendId) => {
+          return Post.find({ userId: friendId });
+        })
+    );
+    return userPosts.concat(...friendPosts);
+  } catch (err) {
+    throw err;
+  }
+};
+
 
 //post create service
 const createPostService = async (user_id, description, file, postType, res) => {
@@ -59,4 +144,16 @@ const getPostService = async (user_id, res) => {
   res.status(200).json(posts);
 };
 
-module.exports = { createPostService, getPostService };
+module.exports = {
+  createPost,
+  updatePost,
+  deletePost,
+  likeDislikePost,
+  getPostById,
+  getTimelinePosts,
+  createPostService, getPostService
+};
+
+
+// ====================
+

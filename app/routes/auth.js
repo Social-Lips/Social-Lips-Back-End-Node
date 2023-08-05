@@ -6,7 +6,7 @@ const upload = multer();
 const {
   userSignUpController,
   userLogInController,
-} = require("../../controllers/authController");
+} = require("../controllers/authController");
 
 //REGISTER or signup
 router.post("/register", upload.single("file"), userSignUpController);
