@@ -5,7 +5,7 @@ const { Upload } = require("@aws-sdk/lib-storage");
 const { s3 } = require("../../config");
 
 //post create service
-const createPostService = async (user_id, description, file, res) => {
+const createPostService = async (user_id, description, file, postType, res) => {
   console.log(user_id, description, file);
   //create random name for upload file
   const randomName = (byte = 32) => {
@@ -34,7 +34,12 @@ const createPostService = async (user_id, description, file, res) => {
       //get image URL
       const img_url = await getImageUrl(randomImageName);
 
-      const post = await Post.create({ user_id, description, img_url });
+      const post = await Post.create({
+        user_id,
+        description,
+        img_url,
+        postType,
+      });
 
       // res.send(user);
       res.status(200).json(post);
