@@ -1,11 +1,18 @@
 const router = require("express").Router();
-const authController = require("../controllers/authController");
-const loginController = require("../controllers/loginController");
 
-//REGISTER
-router.post("/register", authController.registerUser);
+const multer = require("multer");
+const upload = multer();
+
+
+const {
+    userSignUpController,
+    userLogInController,
+} = require("../controllers/authController");
+
+//REGISTER or signup
+router.post("/register", upload.single("file"), userSignUpController);
 
 //LOGIN
-router.post("/login", loginController.loginUser);
+router.post("/login", userLogInController);
 
 module.exports = router;

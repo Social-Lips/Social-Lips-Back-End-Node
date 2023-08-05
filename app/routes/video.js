@@ -3,7 +3,7 @@ const router = require("express").Router();
 //controllers
 const {
   uploadFileController,
-} = require("../../controllers/videoUploadController");
+} = require("../../testing/Test");
 
 //aws configuration
 const aws = require("aws-sdk");
