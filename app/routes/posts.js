@@ -2,15 +2,19 @@ const router = require("express").Router();
 const Post = require("../models/Post");
 const User = require("../models/User");
 
-const multer = require("multer");
-const upload = multer();
-
-const { createPostController } = require("../../controllers/postController");
-
 //create a post
-router.post("/", upload.single("file"), createPostController);
 
+router.post("/", async (req, res) => {
+  const newPost = new Post(req.body);
+  try {
+    const savedPost = await newPost.save();
+    res.status(200).json(savedPost);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
 //update a post
+
 router.put("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -24,8 +28,8 @@ router.put("/:id", async (req, res) => {
     res.status(500).json(err);
   }
 });
-
 //delete a post
+
 router.delete("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -77,7 +81,7 @@ router.get("/timeline/all", async (req, res) => {
         return Post.find({ userId: friendId });
       })
     );
-    res.json(userPosts.concat(...friendPosts));
+    res.json(userPosts.concat(...friendPosts))
   } catch (err) {
     res.status(500).json(err);
   }
