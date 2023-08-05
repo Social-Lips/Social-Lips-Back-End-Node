@@ -5,9 +5,9 @@ const {
 //create post
 const createPostController = async (req, res) => {
   const file = req.file;
-  const { user_id, description } = req.body;
+  const { user_id, description, postType } = req.body;
 
-  await createPostService(user_id, description, file, res);
+  await createPostService(user_id, description, file, postType, res);
 };
 
 const getPostController = async (req, res) => {
