@@ -1,11 +1,7 @@
 const router = require("express").Router();
-const User = require("../models/User");
-const bcrypt = require("bcrypt");
 
 const multer = require("multer");
 const upload = multer();
-
-const crypto = require("crypto");
 
 const {
   userSignUpController,
