@@ -2,19 +2,41 @@ const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userController");
 
-// Update user
-router.put("/:id", userController.updateUser);
+const multer = require("multer");
+const upload = multer();
 
-// Delete user
-router.delete("/:id", userController.deleteUser);
+const {
+  updateUserController,
+  getAllUsersController,
+  getUsersController,
+} = require("../controllers/userController");
 
-// Get a user
-router.get("/:id", userController.getUser);
+//edit user
+router.put(
+  "/:id",
+  upload.fields([{ name: "profilePic" }, { name: "coverPic" }]),
+  updateUserController
+);
 
-// Follow a user
-router.put("/:id/follow", userController.followUser);
+// GET all users
+router.get("/", getAllUsersController);
 
-// Unfollow a user
-router.put("/:id/unfollow", userController.unfollowUser);
+// GET a user
+router.get("/:id", getUsersController);
+
+// // Update user
+// router.put("/:id", userController.updateUser);
+
+// // Delete user
+// router.delete("/:id", userController.deleteUser);
+
+// // Get a user
+// router.get("/:id", userController.getUser);
+
+// // Follow a user
+// router.put("/:id/follow", userController.followUser);
+
+// // Unfollow a user
+// router.put("/:id/unfollow", userController.unfollowUser);
 
 module.exports = router;

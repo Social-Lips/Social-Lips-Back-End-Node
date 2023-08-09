@@ -1,10 +1,8 @@
 const crypto = require("crypto");
 // const Post = require("../../app/models/Post");
-const { getImageUrl } = require("../../utils");
+const { getImageUrl } = require("../utils");
 const { Upload } = require("@aws-sdk/lib-storage");
-const { s3 } = require("../../config");
-
-
+const { s3 } = require("../config");
 
 // services/postService.js
 
@@ -78,16 +76,15 @@ const getTimelinePosts = async (userId) => {
     const currentUser = await User.findById(userId);
     const userPosts = await Post.find({ userId: currentUser._id });
     const friendPosts = await Promise.all(
-        currentUser.followings.map((friendId) => {
-          return Post.find({ userId: friendId });
-        })
+      currentUser.followings.map((friendId) => {
+        return Post.find({ userId: friendId });
+      })
     );
     return userPosts.concat(...friendPosts);
   } catch (err) {
     throw err;
   }
 };
-
 
 //post create service
 const createPostService = async (user_id, description, file, postType, res) => {
@@ -151,9 +148,8 @@ module.exports = {
   likeDislikePost,
   getPostById,
   getTimelinePosts,
-  createPostService, getPostService
+  createPostService,
+  getPostService,
 };
 
-
 // ====================
-

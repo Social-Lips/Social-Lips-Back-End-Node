@@ -2,14 +2,20 @@ const User = require("../../app/models/User");
 const bcrypt = require("bcrypt");
 
 const { Upload } = require("@aws-sdk/lib-storage");
-const { s3 } = require("../../config");
+const { s3 } = require("../config");
 
 const crypto = require("crypto");
-const { getImageUrl } = require("../../utils");
+const { getImageUrl } = require("../utils");
 
 //register
-const userSignUpService = async (email, password, file, res) => {
-  console.log(email, password);
+const userSignUpService = async (
+  email,
+  password,
+  file,
+  res,
+  first_name,
+  last_name
+) => {
   //create random name for profile picture
   const randomName = (byte = 32) => {
     return crypto.randomBytes(byte).toString("hex");
@@ -17,7 +23,7 @@ const userSignUpService = async (email, password, file, res) => {
 
   try {
     //sign in the user and add to the mongoDb
-    const user = await User.signup(email, password);
+    const user = await User.signup(email, password, first_name, last_name);
     const userId = user._id;
 
     //upload profile picture to the s3
@@ -45,7 +51,7 @@ const userSignUpService = async (email, password, file, res) => {
       await existingUser.save();
 
       // res.send(user);
-      res.status(200).json({ email, url, userId });
+      res.status(200).json({ email, _id: userId });
     });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -64,7 +70,7 @@ const userLogInService = async (email, password, res) => {
     const url = user.profilePicture;
     const userId = user._id;
 
-    res.status(200).json({ email, url, userId });
+    res.status(200).json({ email, profilePicture: url, _id: userId });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
