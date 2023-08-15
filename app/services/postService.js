@@ -4,6 +4,8 @@ const { getImageUrl } = require("../utils");
 const { Upload } = require("@aws-sdk/lib-storage");
 const { s3 } = require("../config");
 
+const { uploadFile } = require("../utils");
+
 // services/postService.js
 
 const Post = require("../models/Post");
@@ -88,45 +90,50 @@ const getTimelinePosts = async (userId) => {
 
 //post create service
 const createPostService = async (user_id, description, file, postType, res) => {
-  console.log(user_id, description, file);
   //create random name for upload file
   const randomName = (byte = 32) => {
     return crypto.randomBytes(byte).toString("hex");
   };
 
   try {
-    //upload post_picture to the s3
-    const randomImageName = randomName();
-    const params = {
-      Bucket: process.env.BUCKET,
-      Key: randomImageName,
-      Body: file.buffer,
-      ACL: "public-read",
-    };
-    const uploadParallel = new Upload({
-      client: s3,
-      queueSize: 4, // optional concurrency configuration
-      partSize: 5542880, // optional size of each part
-      leavePartsOnError: false, // optional manually handle dropped parts
-      params,
+    const img_url = await uploadFile(file, "posts");
+    const post = await Post.create({
+      user_id,
+      description,
+      img_url,
+      postType,
     });
+    // const params = {
+    //   Bucket: process.env.BUCKET,
+    //   Key: randomImageName,
+    //   Body: file.buffer,
+    //   ACL: "public-read",
+    // };
+    // const uploadParallel = new Upload({
+    //   client: s3,
+    //   queueSize: 4, // optional concurrency configuration
+    //   partSize: 5542880, // optional size of each part
+    //   leavePartsOnError: false, // optional manually handle dropped parts
+    //   params,
+    // });
 
     //after uploaded a post_image
-    uploadParallel.done().then(async (data) => {
-      //get image URL
-      const img_url = await getImageUrl(randomImageName);
+    // uploadParallel.done().then(async (data) => {
+    //   //get image URL
+    //   const img_url = await getImageUrl(randomImageName);
 
-      const post = await Post.create({
-        user_id,
-        description,
-        img_url,
-        postType,
-      });
+    //   const post = await Post.create({
+    //     user_id,
+    //     description,
+    //     img_url,
+    //     postType,
+    //   });
 
-      // res.send(user);
-      res.status(200).json(post);
-      //   res.status(200).json({ savedPost });
-    });
+    //   // res.send(user);
+    //   res.status(200).json(post);
+    //   //   res.status(200).json({ savedPost });
+    // });
+    res.status(200).json(post);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

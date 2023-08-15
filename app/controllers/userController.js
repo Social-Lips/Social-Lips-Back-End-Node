@@ -8,17 +8,17 @@ const {
 
 //edit profile
 const updateUserController = async (req, res) => {
-  const profile_img_file = req.files[0];
-  const cover_img_file = req.files[1];
+  const profilePicture = req.files.profilePicture;
+  const coverPicture = req.files.coverPicture;
 
   const {
-    firstName,
-    lastName,
+    first_name,
+    last_name,
     bio,
-    studying,
-    lives,
-    relationship,
-    work,
+    studying_at,
+    lives_in,
+    in_relationship,
+    work_at,
     adminId,
   } = req.body;
 
@@ -27,15 +27,15 @@ const updateUserController = async (req, res) => {
   await updateUserService(
     adminId,
     paramsId,
-    // firstName,
-    // lastName,
-    // bio,
-    // studying,
-    // relationship,
-    // lives,
-    // work,
-    // profile_img_file,
-    // cover_img_file,
+    first_name,
+    last_name,
+    bio,
+    studying_at,
+    in_relationship,
+    lives_in,
+    work_at,
+    profilePicture,
+    coverPicture,
     res,
     req
   );

@@ -14,7 +14,7 @@ const {
 //edit user
 router.put(
   "/:id",
-  upload.fields([{ name: "profilePic" }, { name: "coverPic" }]),
+  upload.fields([{ name: "profilePicture" }, { name: "coverPicture" }]),
   updateUserController
 );
 
