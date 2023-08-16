@@ -12,8 +12,9 @@ const multer = require("multer");
 const upload = multer();
 
 const {
-    createPostController,
-    getPostController,
+  createPostController,
+  getPostController,
+  likeDislikePostController,
 } = require("../controllers/postController");
 const { route } = require("./auth");
 
@@ -22,5 +23,8 @@ router.get("/", getPostController);
 
 //create a post
 router.post("/", upload.single("file"), createPostController);
+
+//likeDislikePost
+router.put("/:id/like", likeDislikePostController);
 
 module.exports = router;

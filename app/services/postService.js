@@ -49,15 +49,15 @@ const deletePost = async (postId, userId) => {
   }
 };
 
-const likeDislikePost = async (postId, userId) => {
+const likeDislikePostService = async (postId, userId) => {
   try {
     const post = await Post.findById(postId);
     if (!post.likes.includes(userId)) {
       await post.updateOne({ $push: { likes: userId } });
-      return "The post has been liked";
+      return "liked";
     } else {
       await post.updateOne({ $pull: { likes: userId } });
-      return "The post has been disliked";
+      return "disliked";
     }
   } catch (err) {
     throw err;
@@ -90,11 +90,6 @@ const getTimelinePosts = async (userId) => {
 
 //post create service
 const createPostService = async (user_id, description, file, postType, res) => {
-  //create random name for upload file
-  const randomName = (byte = 32) => {
-    return crypto.randomBytes(byte).toString("hex");
-  };
-
   try {
     const img_url = await uploadFile(file, "posts");
     const post = await Post.create({
@@ -152,7 +147,7 @@ module.exports = {
   createPost,
   updatePost,
   deletePost,
-  likeDislikePost,
+  likeDislikePostService,
   getPostById,
   getTimelinePosts,
   createPostService,
