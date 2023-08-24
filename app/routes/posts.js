@@ -15,6 +15,8 @@ const {
   createPostController,
   getPostController,
   likeDislikePostController,
+  addCommentController,
+  getCommentsController,
 } = require("../controllers/postController");
 const { route } = require("./auth");
 
@@ -26,5 +28,11 @@ router.post("/", upload.single("file"), createPostController);
 
 //likeDislikePost
 router.put("/:id/like", likeDislikePostController);
+
+//add comment
+router.post("/addComment", addCommentController);
+
+//get comments
+router.get("/comments", getCommentsController);
 
 module.exports = router;

@@ -46,6 +46,27 @@ const likeDislikePostController = async (req, res) => {
   }
 };
 
+const addCommentController = async (req, res) => {
+  console.log(req.body);
+  const { postId, userId, commentText, userName, profilePic } = req.body;
+
+  await postService.addCommentService(
+    postId,
+    userId,
+    commentText,
+    userName,
+    profilePic,
+    res
+  );
+};
+
+const getCommentsController = async (req, res) => {
+  const { postId } = req.query;
+  console.log("postId", postId);
+
+  await postService.getCommentsService(postId, res);
+};
+
 const getPostById = async (req, res) => {
   try {
     const post = await postService.getPostById(req.params.id);
@@ -92,4 +113,6 @@ module.exports = {
   getTimelinePosts,
   createPostController,
   getPostController,
+  addCommentController,
+  getCommentsController,
 };

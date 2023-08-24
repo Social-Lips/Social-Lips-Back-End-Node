@@ -143,6 +143,51 @@ const getPostService = async (user_id, res) => {
   res.status(200).json(posts);
 };
 
+const addCommentService = async (
+  postId,
+  userId,
+  commentText,
+  userName,
+  profilePic,
+  res
+) => {
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      res.status(400).json({ error: "Post Not Found" });
+    }
+
+    const newComment = {
+      user_id: userId,
+      userName: userName,
+      profilePic: profilePic,
+      text: commentText,
+      createdAt: new Date(),
+    };
+
+    post.comments.push(newComment);
+    await post.save();
+    res.status(200).json(newComment);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+//get comments service
+const getCommentsService = async (postId, res) => {
+  const post = await Post.find({ _id: postId }).sort({ createdAt: -1 });
+  if (!post) {
+    res.status(400).json({ error: "No such posts" });
+    return;
+  }
+  const comments = post[0].comments;
+  if (comments.length == 0) {
+    res.status(400).json({ error: "No Comments" });
+    return;
+  }
+  res.status(200).json(comments);
+};
+
 module.exports = {
   createPost,
   updatePost,
@@ -152,6 +197,8 @@ module.exports = {
   getTimelinePosts,
   createPostService,
   getPostService,
+  addCommentService,
+  getCommentsService,
 };
 
 // ====================

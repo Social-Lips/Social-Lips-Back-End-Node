@@ -23,12 +23,6 @@ const PostSchema = new mongoose.Schema(
     },
     comments: {
       type: Array,
-      default: [
-        {
-          user_id: "12",
-          comment: "This is comment",
-        },
-      ],
     },
   },
   { timestamps: true }
