@@ -182,10 +182,9 @@ const getCommentsService = async (postId, res) => {
     if (post.comments?.length == 0) {
       return res.status(400).json({ error: "No Comments" });
     }
-    console.log("comments", post.comments.length);
 
+    //add commenter details
     const commentData = [];
-
     for (const comment of post.comments) {
       const user = await User.findById(comment.user_id).select(
         "first_name last_name profilePicture"

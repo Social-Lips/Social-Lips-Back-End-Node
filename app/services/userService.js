@@ -105,4 +105,55 @@ const getUserService = async (_id, res) => {
   }
 };
 
-module.exports = { updateUserService, getAllUsersService, getUserService };
+//follow user
+const followUserService = async (paramsId, userId, res) => {
+  if (userId !== paramsId) {
+    try {
+      const user = await User.findById(paramsId);
+      const currentUser = await User.findById(userId);
+      if (!user.followers.includes(userId)) {
+        await user.updateOne({ $push: { followers: userId } });
+        await currentUser.updateOne({ $push: { followings: paramsId } });
+        res.status(200).json("User has been followed");
+      } else {
+        res.status(403).json("You already follow this user");
+      }
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  } else {
+    res.status(403).json("You can't follow yourself");
+  }
+};
+
+//un follow user
+const unFollowUserService = async (paramsId, userId, res) => {
+  if (userId !== paramsId) {
+    try {
+      const user = await User.findById(paramsId);
+      console.log("user", user);
+      const currentUser = await User.findById(userId);
+      console.log("currentUser", userId);
+
+      if (user.followers.includes(userId)) {
+        await user.updateOne({ $pull: { followers: userId } });
+        await currentUser.updateOne({ $pull: { followings: paramsId } });
+        res.status(200).json("User has been unfollowed");
+      } else {
+        res.status(403).json("You don't follow this user");
+      }
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  } else {
+    res.status(403).json("You can't unfollow yourself");
+  }
+};
+
+module.exports = {
+  updateUserService,
+  getAllUsersService,
+  getUserService,
+  followUserService,
+  unFollowUserService,
+};

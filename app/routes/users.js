@@ -9,6 +9,8 @@ const {
   updateUserController,
   getAllUsersController,
   getUsersController,
+  followUserController,
+  unFollowUserController,
 } = require("../controllers/userController");
 
 //edit user
@@ -33,10 +35,10 @@ router.get("/:id", getUsersController);
 // // Get a user
 // router.get("/:id", userController.getUser);
 
-// // Follow a user
-// router.put("/:id/follow", userController.followUser);
+// Follow a user
+router.put("/:id/follow", followUserController);
 
 // // Unfollow a user
-// router.put("/:id/unfollow", userController.unfollowUser);
+router.put("/:id/unfollow", unFollowUserController);
 
 module.exports = router;
