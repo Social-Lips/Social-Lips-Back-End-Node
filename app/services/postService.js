@@ -159,14 +159,13 @@ const addCommentService = async (
 
     const newComment = {
       user_id: userId,
-      userName: userName,
-      profilePic: profilePic,
       text: commentText,
       createdAt: new Date(),
     };
 
     post.comments.push(newComment);
     await post.save();
+
     res.status(200).json(newComment);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -175,17 +174,36 @@ const addCommentService = async (
 
 //get comments service
 const getCommentsService = async (postId, res) => {
-  const post = await Post.find({ _id: postId }).sort({ createdAt: -1 });
-  if (!post) {
-    res.status(400).json({ error: "No such posts" });
-    return;
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(400).json({ error: "No such post" });
+    }
+    if (post.comments?.length == 0) {
+      return res.status(400).json({ error: "No Comments" });
+    }
+    console.log("comments", post.comments.length);
+
+    const commentData = [];
+
+    for (const comment of post.comments) {
+      const user = await User.findById(comment.user_id).select(
+        "first_name last_name profilePicture"
+      );
+
+      if (user) {
+        const commentWithUser = {
+          ...comment,
+          commentBy: user,
+        };
+        commentData.push(commentWithUser);
+      }
+    }
+
+    res.status(200).json(commentData);
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
   }
-  const comments = post[0].comments;
-  if (comments.length == 0) {
-    res.status(400).json({ error: "No Comments" });
-    return;
-  }
-  res.status(200).json(comments);
 };
 
 module.exports = {
