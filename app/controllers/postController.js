@@ -76,13 +76,10 @@ const getPostById = async (req, res) => {
   }
 };
 
-const getTimelinePosts = async (req, res) => {
-  try {
-    const posts = await postService.getTimelinePosts(req.body.userId);
-    res.json(posts);
-  } catch (err) {
-    res.status(500).json(err);
-  }
+const getTimelinePostsController = async (req, res) => {
+  const { user_id } = req.query;
+
+  await postService.getTimelinePostsService(user_id, res);
 };
 
 const createPostController = async (req, res) => {
@@ -110,9 +107,9 @@ module.exports = {
   deletePost,
   likeDislikePostController,
   getPostById,
-  getTimelinePosts,
   createPostController,
   getPostController,
   addCommentController,
   getCommentsController,
+  getTimelinePostsController,
 };

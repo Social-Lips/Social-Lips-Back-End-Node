@@ -73,16 +73,46 @@ const getPostById = async (postId) => {
   }
 };
 
-const getTimelinePosts = async (userId) => {
+const getTimelinePostsService = async (userId, res) => {
   try {
     const currentUser = await User.findById(userId);
-    const userPosts = await Post.find({ userId: currentUser._id });
+    const userPosts = await Post.find({ user_id: currentUser._id });
     const friendPosts = await Promise.all(
       currentUser.followings.map((friendId) => {
-        return Post.find({ userId: friendId });
+        return Post.find({ user_id: friendId });
       })
     );
-    return userPosts.concat(...friendPosts);
+
+    const _timelinePosts = userPosts.concat(...friendPosts);
+    console.log(_timelinePosts);
+    const timelinePosts = [];
+    for (const post of _timelinePosts) {
+      const user = await User.findById(post.user_id).select(
+        "first_name last_name profilePicture"
+      );
+      // console.log(post);
+      if (user) {
+        const postWithUser = {
+          profilePicture: user.profilePicture,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          user_id: user._id,
+          description: post.description,
+          img_url: post.img_url,
+          createdAt: new Date(post.createdAt),
+          likes: post.likes,
+          comments: post.comments,
+          post_id: post._id,
+          postType: post.postType,
+        };
+        timelinePosts.push(postWithUser);
+      }
+    }
+    console.log(timelinePosts);
+    // Sort the posts by createdAt in descending order
+    const orderedList = timelinePosts.sort((a, b) => b.createdAt - a.createdAt);
+
+    res.status(200).json(orderedList);
   } catch (err) {
     throw err;
   }
@@ -211,11 +241,11 @@ module.exports = {
   deletePost,
   likeDislikePostService,
   getPostById,
-  getTimelinePosts,
   createPostService,
   getPostService,
   addCommentService,
   getCommentsService,
+  getTimelinePostsService,
 };
 
 // ====================

@@ -1,10 +1,10 @@
 const router = require("express").Router();
 const postController = require("../controllers/postController");
 
-// router.post("/", postController.createPost);
+// router.post("/", postController.createPost); added
 // router.put("/:id", postController.updatePost);
 // router.delete("/:id", postController.deletePost);
-// router.put("/:id/like", postController.likeDislikePost);
+// router.put("/:id/like", postController.likeDislikePost); added
 // router.get("/:id", postController.getPostById);
 // router.get("/timeline/all", postController.getTimelinePosts);
 
@@ -17,6 +17,7 @@ const {
   likeDislikePostController,
   addCommentController,
   getCommentsController,
+  getTimelinePostsController,
 } = require("../controllers/postController");
 const { route } = require("./auth");
 
@@ -34,5 +35,8 @@ router.post("/addComment", addCommentController);
 
 //get comments
 router.get("/comments", getCommentsController);
+
+//get timeline post
+router.get("/timeline/all", getTimelinePostsController);
 
 module.exports = router;
