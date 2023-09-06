@@ -6,7 +6,7 @@ const postController = require("../controllers/postController");
 // router.delete("/:id", postController.deletePost);
 // router.put("/:id/like", postController.likeDislikePost); added
 // router.get("/:id", postController.getPostById);
-// router.get("/timeline/all", postController.getTimelinePosts);
+// router.get("/timeline/all", postController.getTimelinePosts); added
 
 const multer = require("multer");
 const upload = multer();

@@ -84,13 +84,12 @@ const getTimelinePostsService = async (userId, res) => {
     );
 
     const _timelinePosts = userPosts.concat(...friendPosts);
-    console.log(_timelinePosts);
     const timelinePosts = [];
     for (const post of _timelinePosts) {
       const user = await User.findById(post.user_id).select(
         "first_name last_name profilePicture"
       );
-      // console.log(post);
+
       if (user) {
         const postWithUser = {
           profilePicture: user.profilePicture,
@@ -108,11 +107,8 @@ const getTimelinePostsService = async (userId, res) => {
         timelinePosts.push(postWithUser);
       }
     }
-    console.log(timelinePosts);
-    // Sort the posts by createdAt in descending order
-    const orderedList = timelinePosts.sort((a, b) => b.createdAt - a.createdAt);
 
-    res.status(200).json(orderedList);
+    res.status(200).json(timelinePosts);
   } catch (err) {
     throw err;
   }
@@ -128,36 +124,6 @@ const createPostService = async (user_id, description, file, postType, res) => {
       img_url,
       postType,
     });
-    // const params = {
-    //   Bucket: process.env.BUCKET,
-    //   Key: randomImageName,
-    //   Body: file.buffer,
-    //   ACL: "public-read",
-    // };
-    // const uploadParallel = new Upload({
-    //   client: s3,
-    //   queueSize: 4, // optional concurrency configuration
-    //   partSize: 5542880, // optional size of each part
-    //   leavePartsOnError: false, // optional manually handle dropped parts
-    //   params,
-    // });
-
-    //after uploaded a post_image
-    // uploadParallel.done().then(async (data) => {
-    //   //get image URL
-    //   const img_url = await getImageUrl(randomImageName);
-
-    //   const post = await Post.create({
-    //     user_id,
-    //     description,
-    //     img_url,
-    //     postType,
-    //   });
-
-    //   // res.send(user);
-    //   res.status(200).json(post);
-    //   //   res.status(200).json({ savedPost });
-    // });
     res.status(200).json(post);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -170,7 +136,30 @@ const getPostService = async (user_id, res) => {
   if (!posts) {
     res.status(400).json({ error: "No such posts" });
   }
-  res.status(200).json(posts);
+  const UserPosts = [];
+  for (const post of posts) {
+    const user = await User.findById(user_id).select(
+      "first_name last_name profilePicture"
+    );
+
+    if (user) {
+      const postWithUser = {
+        profilePicture: user.profilePicture,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        user_id: user._id,
+        description: post.description,
+        img_url: post.img_url,
+        createdAt: new Date(post.createdAt),
+        likes: post.likes,
+        comments: post.comments,
+        post_id: post._id,
+        postType: post.postType,
+      };
+      UserPosts.push(postWithUser);
+    }
+  }
+  res.status(200).json(UserPosts);
 };
 
 const addCommentService = async (
