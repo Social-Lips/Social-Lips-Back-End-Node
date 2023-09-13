@@ -103,6 +103,7 @@ const getTimelinePostsService = async (userId, res) => {
           comments: post.comments,
           post_id: post._id,
           postType: post.postType,
+          subtitle_url: post.subtitle_url,
         };
         timelinePosts.push(postWithUser);
       }
@@ -115,16 +116,40 @@ const getTimelinePostsService = async (userId, res) => {
 };
 
 //post create service
-const createPostService = async (user_id, description, file, postType, res) => {
+const createPostService = async (
+  user_id,
+  description,
+  file,
+  postType,
+  img_url,
+  res
+) => {
   try {
-    const img_url = await uploadFile(file, "posts");
+    // const img_url = await uploadFile(file, "posts");
     const post = await Post.create({
       user_id,
       description,
       img_url,
       postType,
     });
-    res.status(200).json(post);
+
+    const user = await User.findById(user_id).select(
+      "first_name last_name profilePicture"
+    );
+    const postWithUser = {
+      profilePicture: user.profilePicture,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      user_id: user._id,
+      description: post.description,
+      img_url: post.img_url,
+      createdAt: new Date(post.createdAt),
+      likes: post.likes,
+      comments: post.comments,
+      post_id: post._id,
+      postType: post.postType,
+    };
+    res.status(200).json(postWithUser);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -141,7 +166,7 @@ const getPostService = async (user_id, res) => {
     const user = await User.findById(user_id).select(
       "first_name last_name profilePicture"
     );
-
+    console.log(post.subtitle_url);
     if (user) {
       const postWithUser = {
         profilePicture: user.profilePicture,
@@ -155,10 +180,12 @@ const getPostService = async (user_id, res) => {
         comments: post.comments,
         post_id: post._id,
         postType: post.postType,
+        subtitle_url: post.subtitle_url,
       };
       UserPosts.push(postWithUser);
     }
   }
+  console.log(UserPosts);
   res.status(200).json(UserPosts);
 };
 

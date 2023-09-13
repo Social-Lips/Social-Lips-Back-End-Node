@@ -13,6 +13,14 @@ const PostSchema = new mongoose.Schema(
     img_url: {
       type: String,
     },
+    subtitle_url: {
+      type: String,
+      // default: "",
+    },
+    subtitle_status: {
+      type: String,
+      // default: "",
+    },
     likes: {
       type: Array,
       default: [],

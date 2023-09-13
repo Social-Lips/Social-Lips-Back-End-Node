@@ -62,7 +62,6 @@ const addCommentController = async (req, res) => {
 
 const getCommentsController = async (req, res) => {
   const { postId } = req.query;
-  console.log("postId", postId);
 
   await postService.getCommentsService(postId, res);
 };
@@ -84,13 +83,14 @@ const getTimelinePostsController = async (req, res) => {
 
 const createPostController = async (req, res) => {
   const file = req.file;
-  const { user_id, description, postType } = req.body;
+  const { user_id, description, postType, img_url } = req.body;
 
   await postService.createPostService(
     user_id,
     description,
     file,
     postType,
+    img_url,
     res
   );
 };
