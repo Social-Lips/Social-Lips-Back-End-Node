@@ -22,12 +22,12 @@ const updatePost = async (req, res) => {
   }
 };
 
-const deletePost = async (req, res) => {
+const deletePostController = async (req, res) => {
+  const { userId } = req.body;
+  const { id: postId } = req.params;
+
   try {
-    const message = await postService.deletePost(
-      req.params.id,
-      req.body.userId
-    );
+    const message = await postService.deletePostService(userId, postId);
     res.status(200).json(message);
   } catch (err) {
     res.status(500).json(err);
@@ -47,7 +47,6 @@ const likeDislikePostController = async (req, res) => {
 };
 
 const addCommentController = async (req, res) => {
-  console.log(req.body);
   const { postId, userId, commentText, userName, profilePic } = req.body;
 
   await postService.addCommentService(
@@ -104,7 +103,6 @@ const getPostController = async (req, res) => {
 module.exports = {
   createPost,
   updatePost,
-  deletePost,
   likeDislikePostController,
   getPostById,
   createPostController,
@@ -112,4 +110,5 @@ module.exports = {
   addCommentController,
   getCommentsController,
   getTimelinePostsController,
+  deletePostController,
 };

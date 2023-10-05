@@ -18,6 +18,7 @@ const {
   addCommentController,
   getCommentsController,
   getTimelinePostsController,
+  deletePostController,
 } = require("../controllers/postController");
 const { route } = require("./auth");
 
@@ -38,5 +39,8 @@ router.get("/comments", getCommentsController);
 
 //get timeline post
 router.get("/timeline/all", getTimelinePostsController);
+
+//delete post
+router.delete("/:id", deletePostController);
 
 module.exports = router;

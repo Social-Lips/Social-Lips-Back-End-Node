@@ -35,10 +35,10 @@ const updatePost = async (postId, userId, postData) => {
   }
 };
 
-const deletePost = async (postId, userId) => {
+const deletePostService = async (userId, postId) => {
   try {
     const post = await Post.findById(postId);
-    if (post.userId === userId) {
+    if (post.user_id === userId) {
       await post.deleteOne();
       return "The post has been deleted";
     } else {
@@ -104,6 +104,7 @@ const getTimelinePostsService = async (userId, res) => {
           post_id: post._id,
           postType: post.postType,
           subtitle_url: post.subtitle_url,
+          subtitle_status: post.subtitle_status,
         };
         timelinePosts.push(postWithUser);
       }
@@ -181,6 +182,7 @@ const getPostService = async (user_id, res) => {
         post_id: post._id,
         postType: post.postType,
         subtitle_url: post.subtitle_url,
+        subtitle_status: post.subtitle_status,
       };
       UserPosts.push(postWithUser);
     }
@@ -254,7 +256,6 @@ const getCommentsService = async (postId, res) => {
 module.exports = {
   createPost,
   updatePost,
-  deletePost,
   likeDislikePostService,
   getPostById,
   createPostService,
@@ -262,6 +263,7 @@ module.exports = {
   addCommentService,
   getCommentsService,
   getTimelinePostsService,
+  deletePostService,
 };
 
 // ====================

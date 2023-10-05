@@ -15,11 +15,11 @@ const PostSchema = new mongoose.Schema(
     },
     subtitle_url: {
       type: String,
-      // default: "",
+      default: "",
     },
     subtitle_status: {
       type: String,
-      // default: "",
+      default: "generating",
     },
     likes: {
       type: Array,
