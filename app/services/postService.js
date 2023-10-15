@@ -73,29 +73,37 @@ const getPostById = async (postId) => {
   }
 };
 
-const getTimelinePostsService = async (userId, res) => {
+const getTimelinePostsService = async (userId, page_number, res) => {
+  const page = page_number || 0;
+  const postPerPage = 2;
+
   try {
     const currentUser = await User.findById(userId);
-    const userPosts = await Post.find({ user_id: currentUser._id });
+    const userPosts = await Post.find({ user_id: currentUser._id })
+      .populate("user_id")
+      .skip(page * postPerPage)
+      .limit(postPerPage)
+      .sort({ createdAt: -1 });
+
     const friendPosts = await Promise.all(
       currentUser.followings.map((friendId) => {
-        return Post.find({ user_id: friendId });
+        return Post.find({ user_id: friendId })
+          .populate("user_id")
+          .skip(page * postPerPage)
+          .limit(postPerPage)
+          .sort({ createdAt: -1 });
       })
     );
 
     const _timelinePosts = userPosts.concat(...friendPosts);
     const timelinePosts = [];
     for (const post of _timelinePosts) {
-      const user = await User.findById(post.user_id).select(
-        "first_name last_name profilePicture"
-      );
-
-      if (user) {
+      if (post) {
         const postWithUser = {
-          profilePicture: user.profilePicture,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          user_id: user._id,
+          profilePicture: post.user_id.profilePicture,
+          first_name: post.user_id.first_name,
+          last_name: post.user_id.last_name,
+          user_id: post.user_id._id,
           description: post.description,
           img_url: post.img_url,
           createdAt: new Date(post.createdAt),
@@ -123,15 +131,16 @@ const createPostService = async (
   file,
   postType,
   img_url,
+  subtitle_status,
   res
 ) => {
   try {
-    // const img_url = await uploadFile(file, "posts");
     const post = await Post.create({
       user_id,
       description,
       img_url,
       postType,
+      subtitle_status,
     });
 
     const user = await User.findById(user_id).select(
@@ -149,6 +158,7 @@ const createPostService = async (
       comments: post.comments,
       post_id: post._id,
       postType: post.postType,
+      subtitle_status: post.subtitle_status,
     };
     res.status(200).json(postWithUser);
   } catch (error) {
@@ -205,16 +215,16 @@ const addCommentService = async (
       res.status(400).json({ error: "Post Not Found" });
     }
 
-    const newComment = {
+    const comment = {
       user_id: userId,
       text: commentText,
       createdAt: new Date(),
     };
 
-    post.comments.push(newComment);
+    post.comments.push(comment);
     await post.save();
 
-    res.status(200).json(newComment);
+    res.status(200).json(comment);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -246,7 +256,6 @@ const getCommentsService = async (postId, res) => {
         commentData.push(commentWithUser);
       }
     }
-
     res.status(200).json(commentData);
   } catch (err) {
     res.status(500).json({ error: "Server error" });

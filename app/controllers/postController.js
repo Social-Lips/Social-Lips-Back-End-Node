@@ -75,14 +75,14 @@ const getPostById = async (req, res) => {
 };
 
 const getTimelinePostsController = async (req, res) => {
-  const { user_id } = req.query;
+  const { user_id, page_number } = req.query;
 
-  await postService.getTimelinePostsService(user_id, res);
+  await postService.getTimelinePostsService(user_id, page_number, res);
 };
 
 const createPostController = async (req, res) => {
   const file = req.file;
-  const { user_id, description, postType, img_url } = req.body;
+  const { user_id, description, postType, img_url, subtitle_status } = req.body;
 
   await postService.createPostService(
     user_id,
@@ -90,6 +90,7 @@ const createPostController = async (req, res) => {
     file,
     postType,
     img_url,
+    subtitle_status,
     res
   );
 };
