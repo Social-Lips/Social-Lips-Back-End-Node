@@ -1,5 +1,5 @@
 const { Upload } = require("@aws-sdk/lib-storage");
-const { s3 } = require("../config");
+const { s3 } = require("../app/config");
 const crypto = require("crypto");
 const BUCKET = "social-lips";
 

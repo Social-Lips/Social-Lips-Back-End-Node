@@ -3,10 +3,9 @@ const router = require("express").Router();
 const multer = require("multer");
 const upload = multer();
 
-
 const {
-    userSignUpController,
-    userLogInController,
+  userSignUpController,
+  userLogInController,
 } = require("../controllers/authController");
 
 //REGISTER or signup

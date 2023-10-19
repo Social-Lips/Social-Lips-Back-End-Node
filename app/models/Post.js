@@ -3,8 +3,9 @@ const mongoose = require("mongoose");
 const PostSchema = new mongoose.Schema(
   {
     user_id: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
+      ref: "User",
     },
     description: {
       type: String,
@@ -13,6 +14,14 @@ const PostSchema = new mongoose.Schema(
     img_url: {
       type: String,
     },
+    subtitle_url: {
+      type: String,
+      default: "",
+    },
+    subtitle_status: {
+      type: String,
+      // default: "generating",
+    },
     likes: {
       type: Array,
       default: [],
@@ -20,6 +29,9 @@ const PostSchema = new mongoose.Schema(
     postType: {
       type: String,
       required: true,
+    },
+    comments: {
+      type: Array,
     },
   },
   { timestamps: true }

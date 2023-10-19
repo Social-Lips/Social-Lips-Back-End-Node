@@ -13,6 +13,16 @@ const userSchema = new Schema(
     //   max: 20,
     //   unique: true,
     // },
+    first_name: {
+      type: String,
+      max: 50,
+      default: "",
+    },
+    last_name: {
+      type: String,
+      max: 50,
+      default: "",
+    },
     email: {
       type: String,
       required: true,
@@ -44,28 +54,45 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    desc: {
+    bio: {
       type: String,
       max: 50,
+      default: "This is BIO",
     },
-    city: {
+    studying_at: {
       type: String,
       max: 50,
+      default: "This is Studying at SUSL",
     },
-    from: {
+    lives_in: {
       type: String,
       max: 50,
+      default: "Matara",
     },
-    relationship: {
-      type: Number,
-      enum: [1, 2, 3],
+    work_at: {
+      type: String,
+      max: 50,
+      default: "HNB Bank",
+    },
+    // relationship: {
+    //   type: Number,
+    //   enum: [1, 2, 3],
+    // },
+    in_relationship: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }
 );
 
 //static signup method
-userSchema.statics.signup = async function (email, password) {
+userSchema.statics.signup = async function (
+  email,
+  password,
+  first_name,
+  last_name
+) {
   //validation
   if (!email || !password) {
     throw Error("All fields must be filled");
@@ -86,7 +113,12 @@ userSchema.statics.signup = async function (email, password) {
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(password, salt);
 
-  const user = await this.create({ email, password: hash });
+  const user = await this.create({
+    email,
+    password: hash,
+    first_name,
+    last_name,
+  });
 
   return user;
 };
