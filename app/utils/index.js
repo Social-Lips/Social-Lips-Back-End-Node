@@ -24,14 +24,27 @@ const uploadFile = async (file, folder) => {
     const metadata = {
       contentType: file.mimetype,
     };
+    // Resize and compress the image
+    const compressedImageBuffer = await sharp(file.buffer)
+      .resize({ width: 800 }) // Adjust the width as needed
+      .jpeg({ quality: 50 }) // Adjust quality as needed
+      .toBuffer();
 
     const snapshot = await uploadBytesResumable(
       storageRef,
-      file.buffer,
+      compressedImageBuffer,
       metadata
     );
     downloadURL = await getDownloadURL(snapshot.ref);
     return downloadURL;
+
+    // const snapshot = await uploadBytesResumable(
+    //   storageRef,
+    //   file.buffer,
+    //   metadata
+    // );
+    // downloadURL = await getDownloadURL(snapshot.ref);
+    // return downloadURL;
   } catch (err) {
     console.log(err);
   }
